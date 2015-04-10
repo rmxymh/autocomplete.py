@@ -26,7 +26,7 @@
                             <input type="text" class="form-control" id="autocomplete" placeholder="Keyword"/>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-default">Search</button>
+                    <button class="btn btn-default" id="search">Search</button>
                 </form>
             </div>
         </div>
@@ -43,7 +43,15 @@
 	    $(document).ready(function() {
 	        $("#autocomplete").on("keypress", function(event) {
 	            // Build XMLRPC Call
-	            get_autocomplete_word_list($("#autocomplete").val());
+	            var chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+	            if(chCode == 13)
+	                query($("#autocomplete").val());
+	            else
+	                get_autocomplete_word_list($("#autocomplete").val() + String.fromCharCode(chCode));
+	        });
+	        $("#search").on("click", function(event) {
+	            query($("#autocomplete").val());
+	            $(this).parent("form:first").submit();
 	        });
 	    });
 	</script>

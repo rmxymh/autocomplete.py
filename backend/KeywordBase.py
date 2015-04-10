@@ -8,6 +8,7 @@ class KeywordBase:
         self.dbfile = dbfile
         self.conn = None
         self.reopen()
+        self.close()
 
     def reopen(self):
         newdb = not os.path.exists(self.dbfile)
@@ -22,22 +23,24 @@ class KeywordBase:
                     );
                 ''')
                 self.conn.commit()
-            
-    def get_word_list(self, word, limit = 20):
-        self.reopen()
-        try:
-            c = self.conn.cursor()
-            c.execute("SELECT * FROM KeywordBase WHERE word LIKE ? ORDER BY access_count DESC LIMIT ?", ('%%%s%%' %(word), limit,))
-            print(c.fetchall())
-        except:
-            self.conn.rollback()
-            print("NONE")
-    
+
     def close(self):
         if self.conn != None:
             self.conn.close()
             self.conn = None
             
+    def get_word_list(self, word, limit = 20):
+        self.reopen()
+        words = []
+        try:
+            c = self.conn.cursor()
+            c.execute("SELECT * FROM KeywordBase WHERE word LIKE ? ORDER BY access_count DESC LIMIT ?", ('%%%s%%' %(word), limit,))
+            words = c.fetchall()
+        except:
+            self.conn.rollback()
+        self.close()
+        return words
+
     def inc_query(self, word):
         self.reopen()
         try:
@@ -61,6 +64,7 @@ class KeywordBase:
             print(traceback.format_exc())
             print("NONE")
             self.conn.rollback()
+        self.close()
 
     def moc_data_init(self):
         data = [('test', 400),
@@ -77,11 +81,12 @@ class KeywordBase:
             self.conn.commit()
         except:
             self.conn.rollback()
+        self.close()
 
 
 if __name__ == "__main__":
     db = KeywordBase("keyword.db")
-    db.mock_data_init()
+    db.moc_data_init()
     db.get_word_list("test")
     db.inc_query("abc")
     db.inc_query("test")

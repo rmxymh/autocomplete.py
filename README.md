@@ -9,6 +9,6 @@ Package
 
 Todo
 ----
-* XMLRPC Server (Query)
+* CGI Interface
 * Multi-word query (Thinking...)
 

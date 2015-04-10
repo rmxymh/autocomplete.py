@@ -14,3 +14,13 @@ function get_autocomplete_word_list(word)
         }
     );
 }
+
+function query(word)
+{
+    $.getJSON("/autocomplete.py/backend/query.py?keyword=" + word,
+        function(data) {
+            // do nothing here
+        }
+    );
+
+}
